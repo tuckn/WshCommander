@@ -13,9 +13,9 @@ var child_process = Wsh.ChildProcess;
 var cli = Wsh.Commander;
 
 var includes = util.includes;
-var execSync = child_process.execSync;
 var srr = os.surroundPath;
 var CSCRIPT = os.exefiles.cscript;
+var execSync = child_process.execSync;
 
 var testCmd = srr(CSCRIPT) + ' ' + srr(__filename) + ' //job:test:Commander';
 

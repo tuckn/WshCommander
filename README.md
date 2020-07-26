@@ -93,7 +93,7 @@ If you have no special circumstances, I recommend using [WshBasicApps](https://g
 Now _.\\MyScript.js_ (JScript ) can use `Wsh.Commander`.
 
 ```js
-var cmd = Wsh.Commander;
+var cmd = Wsh.Commander; // Shorthand
 
 cmd.addProgram({
  /* The program schema A */
@@ -109,7 +109,7 @@ cmd.parse(/* WSH Arguments */);
 For example.
 
 ```js
-var cmd = Wsh.Commander;
+var cmd = Wsh.Commander; // Shorthand
 
 cmd.addProgram({
   command: 'play <consoleName> [gameTitle]',
@@ -146,7 +146,7 @@ Options:
 ### Use options
 
 ```js
-var cmd = Wsh.Commander;
+var cmd = Wsh.Commander; // Shorthand
 
 cmd.addProgram({
   requiredOptions: [ // This options can not be omitted.
@@ -206,7 +206,7 @@ true
 ### Action
 
 ```js
-var cmd = Wsh.Commander;
+var cmd = Wsh.Commander; // Shorthand
 
 cmd.addProgram({
   command: 'play <consoleName> [gameTitle]',
@@ -230,7 +230,7 @@ play SEGA Saturn
 ### Options and Action
 
 ```js
-var cmd = Wsh.Commander;
+var cmd = Wsh.Commander; // Shorthand
 
 cmd.addProgram({
   command: 'play <consoleName>',
@@ -252,7 +252,7 @@ cmd.parse(process.argv);
 ### Pre-processing
 
 ```js
-var cmd = Wsh.Commander;
+var cmd = Wsh.Commander; // Shorthand
 
 cmd.addProgram({
   options: [
@@ -284,7 +284,7 @@ NaN
 ### Customize
 
 ```js
-var cmd = Wsh.Commander;
+var cmd = Wsh.Commander; // Shorthand
 
 cmd.addProgram({
   version: '0.5.1', // Add the version number and outputing action
