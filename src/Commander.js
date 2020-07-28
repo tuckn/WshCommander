@@ -784,11 +784,73 @@
    * @example
    * var cmd = Wsh.Commander;
    *
-   * // Ex.1 Switch
-   * cmd.addProgram({ options: [
-   *   ['-O, --switch-no', 'Normally opened switch'], // default: false
-   *   ['-C, --no-switch-nc', 'Normally closed switch'] // default: true
-   * ]});
+   * // Ex. Command and Action
+   * cmd.addProgram({
+   *   command: 'play <consoleName> [gameTitle]',
+   *   action: function (consoleName, gameTitle) {
+   *     if (typeof gameTitle === 'string') {
+   *       console.log('play ' + gameTitle + ' on ' + consoleName);
+   *     } else {
+   *       console.log('play ' + consoleName);
+   *     }
+   *   }
+   * });
+   * cmd.parse(process.argv);
+   *
+   * // D:\>cscript Run.wsf
+   * // ERROR: Set a command.
+   * // where <command> is one of:
+   * //     play
+   *
+   * // D:\>cscript Run.wsf play
+   * // error: missing required argument "consoleName"
+   * // Usage: play <consoleName> [gameTitle]
+   * //
+   * // Options:
+   * //   -h, --help Output usage information
+   *
+   * // D:\>cscript Run.wsf play "PC-Engine"
+   * // play PC-Engine
+   * @example
+   * // Ex. Any-arguments
+   * cmd.addProgram({
+   *   command: 'createZip <srcDir> <destDir> [excludes...]',
+   *   action: function (srcDir, destDir, excludes) {
+   *     if (excludes) {
+   *       return 'srcDir: "' + srcDir + '", destDir: "' + destDir + '", '
+   *         + 'excludes: ' + excludes.join(', ');
+   *     }
+   *     return 'srcDir: "' + srcDir + '", destDir: "' + destDir + '"';
+   *   }
+   * });
+   * var str = cmd.parse(process.argv);
+   * console.log(str);
+   *
+   * // D:\>cscript Run.wsf createZip C:\\Users D:\\BackUp tmp temp cache
+   * // srcDir: "C:\\Users", destDir: "D:\\BackUp", excludes: tmp,temp,cache
+   * @example
+   * // Ex. Commands
+   * cmd.addProgram({
+   *   command: 'play',
+   *   action: function () { console.log('Your command is `play`'); }
+   * });
+   *
+   * cmd.addProgram({
+   *   command: 'study',
+   *   action: function () { console.log('Your command is `study`'); }
+   * });
+   * cmd.parse(process.argv);
+   *
+   * // D:\>cscript Run.wsf study
+   * // Your command is `study`
+   * @example
+   * // Ex. Option Switch
+   * cmd.addProgram({
+   *   options: [
+   *     ['-O, --switch-no', 'Normally opened switch'], // default: false
+   *     ['-C, --no-switch-nc', 'Normally closed switch'] // default: true
+   *   ]
+   * });
    * cmd.parse(process.argv);
    *
    * // `D:\>cscript Run.wsf`
@@ -800,11 +862,13 @@
    * cmd.opt.switchNo; // true
    * cmd.opt.switchNc; // false
    * @example
-   * // Ex.2 Flag value
-   * cmd.addProgram({ options: [
-   *   ['-f, --flag [name]', 'Flag name'], // default: undefined
-   *   ['-d, --flag-def [name]', 'Flag name(default: "My Name")', 'My Name'],
-   * ]});
+   * // Ex. Option Flag value
+   * cmd.addProgram({
+   *   options: [
+   *     ['-f, --flag [name]', 'Flag name'], // default: undefined
+   *     ['-d, --flag-def [name]', 'Flag name(default: "My Name")', 'My Name'],
+   *   ]
+   * });
    * cmd.parse(process.argv);
    *
    * // `D:\>cscript Run.wsf`
@@ -821,11 +885,13 @@
    * cmd.opt.flag; // 'Flag A'
    * cmd.opt.flagDef; // 'Flag B'
    * @example
-   * // Ex.3 Pair with a value
-   * cmd.addProgram({ options: [
-   *   ['-r, --required <Foo>', 'Empty <Foo> is not allowed'],
-   *   ['-R, --def-word <Bar>', 'default value is "Def Name"', 'Def Name']
-   * ]});
+   * // Ex. Option Pair with a value
+   * cmd.addProgram({
+   *   options: [
+   *     ['-r, --required <Foo>', 'Empty <Foo> is not allowed'],
+   *     ['-R, --def-word <Bar>', 'default value is "Def Name"', 'Def Name']
+   *   ]
+   * });
    * cmd.parse(process.argv); // No Error
    *
    * // `D:\>cscript Run.wsf`
@@ -840,11 +906,13 @@
    * //  or `D:\>cscript Run.wsf --required "Val A"`
    * cmd.opt.required; // 'Val A'
    * @example
-   * // Ex.4 Array values
-   * cmd.addProgram({ options: [
-   *   ['-f, --flags [name...]', 'Flag name'],
-   *   ['-v, --values <val...>', 'Specify your value', 'Val 0']
-   * ]});
+   * // Ex. Option Array values
+   * cmd.addProgram({
+   *   options: [
+   *     ['-f, --flags [name...]', 'Flag name'],
+   *     ['-v, --values <val...>', 'Specify your value', 'Val 0']
+   *   ]
+   * });
    * cmd.parse(process.argv);
    *
    * // `D:\>cscript Run.wsf`

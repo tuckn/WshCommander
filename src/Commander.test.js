@@ -316,7 +316,7 @@ describe('Commander', function () {
 
   // Command
 
-  test('Command and Action', function () {
+  test('Command_Action', function () {
     var schemaDef = {
       command: '',
       action: function () { return 'Test Default'; }
@@ -371,14 +371,14 @@ describe('Commander', function () {
     expect(cli.parse(processArgv)).toBe('Test 3');
   });
 
-  test('Command and Arguments', function () {
+  test('Command_Arguments', function () {
     var schema = {
-      command: 'play <console> [gameTitle]',
-      action: function (console, gameTitle) {
+      command: 'play <consoleName> [gameTitle]',
+      action: function (consoleName, gameTitle) {
         if (gameTitle) {
-          return 'I play "' + gameTitle + '" with ' + console + '.';
+          return 'I play "' + gameTitle + '" with ' + consoleName + '.';
         }
-        return 'I play with ' + console + '.';
+        return 'I play with ' + consoleName + '.';
       }
     };
 
@@ -403,7 +403,7 @@ describe('Commander', function () {
     expect(cli.parse(processArgv)).toBe('I play "Fighting Street" with PC-Engine.');
   });
 
-  test('Command and Array-Arguments', function () {
+  test('Command_AnyArguments', function () {
     var schema = {
       command: 'createZip <srcDir> <destDir> [excludes...]',
       action: function (srcDir, destDir, excludes) {
