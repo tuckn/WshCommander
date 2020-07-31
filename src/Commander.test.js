@@ -29,6 +29,189 @@ describe('Commander', function () {
   var headArgs = [process.argv0, process.argv[1]];
   var processArgv;
 
+  // Command
+
+  test('Command_Action', function () {
+    var schemaDef = {
+      command: '',
+      action: function () { return 'Test Default'; }
+    };
+    var schema1 = {
+      command: 'test1',
+      action: function () { return 'Test 1'; }
+    };
+    var schema2 = {
+      command: 'test2',
+      action: function () { return 'Test 2'; }
+    };
+    var schema3 = {
+      command: 'test3',
+      action: function () { return 'Test 3'; }
+    };
+
+    // No set the default command schema and no arg
+    cli.clearPrograms();
+    cli.addPrograms([schema1, schema2, schema3]);
+    processArgv = headArgs.concat([]);
+    expect(_cb(cli.parse, processArgv)).toThrowError(); // No matched command
+
+    cli.clearPrograms();
+    cli.addPrograms([schema1, schema2, schema3]);
+    processArgv = headArgs.concat(['unMatchedCommand']);
+    expect(_cb(cli.parse, processArgv)).toThrowError(); // No matched command
+
+    cli.clearPrograms();
+    cli.addPrograms([schemaDef, schema1, schema2, schema3]);
+    processArgv = headArgs.concat([]);
+    expect(cli.parse(processArgv)).toBe('Test Default');
+
+    cli.clearPrograms();
+    cli.addPrograms([schemaDef, schema1, schema2, schema3]);
+    processArgv = headArgs.concat(['unMatchedCommand']);
+    expect(cli.parse(processArgv)).toBe('Test Default');
+
+    cli.clearPrograms();
+    cli.addPrograms([schema1, schema2, schema3]);
+    processArgv = headArgs.concat(['test1']);
+    expect(cli.parse(processArgv)).toBe('Test 1');
+
+    cli.clearPrograms();
+    cli.addPrograms([schema1, schema2, schema3]);
+    processArgv = headArgs.concat(['test2']);
+    expect(cli.parse(processArgv)).toBe('Test 2');
+
+    cli.clearPrograms();
+    cli.addPrograms([schema1, schema2, schema3]);
+    processArgv = headArgs.concat(['test3']);
+    expect(cli.parse(processArgv)).toBe('Test 3');
+  });
+
+  test('Command_Arguments', function () {
+    var schema = {
+      command: 'play <consoleName> [gameTitle]',
+      action: function (consoleName, gameTitle) {
+        if (gameTitle) {
+          return 'I play "' + gameTitle + '" with ' + consoleName + '.';
+        }
+        return 'I play with ' + consoleName + '.';
+      }
+    };
+
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat([]);
+    expect(_cb(cli.parse, processArgv)).toThrowError();
+
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['play']);
+    expect(_cb(cli.parse, processArgv)).toThrowError();
+
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['play', 'PC-Engine']);
+    expect(cli.parse(processArgv)).toBe('I play with PC-Engine.');
+
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['play', 'PC-Engine', 'Fighting Street']);
+    expect(cli.parse(processArgv)).toBe('I play "Fighting Street" with PC-Engine.');
+  });
+
+  test('Command_AnyArguments', function () {
+    var schema = {
+      command: 'createZip <srcDir> <destDir> [excludes...]',
+      action: function (srcDir, destDir, excludes) {
+        if (excludes) {
+          return 'srcDir: "' + srcDir + '", destDir: "' + destDir + '", '
+            + 'excludes: ' + excludes.join(', ');
+        }
+        return 'srcDir: "' + srcDir + '", destDir: "' + destDir + '"';
+      }
+    };
+
+    var srcDir = 'C:\\Users';
+    var destDir = 'D:\\BackUp';
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['createZip', srcDir, destDir]);
+    expect(cli.parse(processArgv)).toBe('srcDir: "' + srcDir + '", destDir: "' + destDir + '"');
+
+    var exclude1 = '.tmp';
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['createZip', srcDir, destDir, exclude1]);
+    expect(cli.parse(processArgv)).toBe('srcDir: "' + srcDir + '", destDir: "' + destDir + '", excludes: ' + exclude1);
+
+    var exclude2 = 'cache';
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['createZip', srcDir, destDir, exclude1, exclude2]);
+    expect(cli.parse(processArgv)).toBe('srcDir: "' + srcDir + '", destDir: "' + destDir + '", excludes: ' + exclude1 + ', ' + exclude2);
+
+    var exclude3 = '~';
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['createZip', srcDir, destDir, exclude1, exclude2, exclude3]);
+    expect(cli.parse(processArgv)).toBe('srcDir: "' + srcDir + '", destDir: "' + destDir + '", excludes: ' + exclude1 + ', ' + exclude2 + ', ' + exclude3);
+
+    var exclude4 = 'foo bar baz';
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['createZip', srcDir, destDir, exclude1, exclude2, exclude3, exclude4]);
+    expect(cli.parse(processArgv)).toBe('srcDir: "' + srcDir + '", destDir: "' + destDir + '", excludes: ' + exclude1 + ', ' + exclude2 + ', ' + exclude3 + ', ' + exclude4);
+  });
+
+  test('Command Arguments and Options', function () {
+    var schema = {
+      command: 'unZip <zipPath> [destDir]',
+      options: [
+        ['-N, --no-makes-dir', 'None create a new directory'],
+        ['-P, --pwd <password>', 'unzip password']
+      ],
+      action: function (zipPath, destDir, options) {
+        if (options.pwd) {
+          return 'Unzip "' + zipPath + '". The encrypting password is "' + options.pwd + '"';
+        }
+        if (!options.makesDir) {
+          return 'Unzip "' + zipPath + '" without making new directory.';
+        }
+        if (destDir) {
+          return 'Unzip "' + zipPath + '" to "' + destDir + '".';
+        }
+        return 'Unzip "' + zipPath + '".';
+      }
+    };
+
+    var zipPath = 'D:\\mydata.zip';
+    var destDir = 'D:\\tmp';
+
+    cli.clearPrograms();
+    cli.addPrograms([schema]);
+    processArgv = headArgs.concat([]);
+    expect(_cb(cli.parse, processArgv)).toThrowError();
+
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['unZip', zipPath]);
+    expect(cli.parse(processArgv)).toBe('Unzip "' + zipPath + '".');
+
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['unZip', zipPath, destDir]);
+    expect(cli.parse(processArgv)).toBe('Unzip "' + zipPath + '" to "' + destDir + '".');
+
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['unZip', zipPath, '-N']);
+    expect(cli.parse(processArgv)).toBe('Unzip "' + zipPath + '" without making new directory.');
+
+    cli.clearPrograms();
+    cli.addProgram(schema);
+    processArgv = headArgs.concat(['unZip', zipPath, '-P', 'p@ssWD']);
+    expect(cli.parse(processArgv)).toBe('Unzip "' + zipPath + '". The encrypting password is "p@ssWD"');
+  });
+
   // Option
 
   test('Option switch', function () {
@@ -312,183 +495,6 @@ describe('Commander', function () {
     cli.parse(processArgv);
     expect(cli.opt.preFunc).toBeNaN();
     expect(cli.opt.increment).toEqual('123');
-  });
-
-  // Command
-
-  test('Command_Action', function () {
-    var schemaDef = {
-      command: '',
-      action: function () { return 'Test Default'; }
-    };
-    var schema1 = {
-      command: 'test1',
-      action: function () { return 'Test 1'; }
-    };
-    var schema2 = {
-      command: 'test2',
-      action: function () { return 'Test 2'; }
-    };
-    var schema3 = {
-      command: 'test3',
-      action: function () { return 'Test 3'; }
-    };
-
-    // No set the default command schema and no arg
-    cli.clearPrograms();
-    cli.addPrograms([schema1, schema2, schema3]);
-    processArgv = headArgs.concat([]);
-    expect(_cb(cli.parse, processArgv)).toThrowError(); // No matched command
-
-    cli.clearPrograms();
-    cli.addPrograms([schema1, schema2, schema3]);
-    processArgv = headArgs.concat(['unMatchedCommand']);
-    expect(_cb(cli.parse, processArgv)).toThrowError(); // No matched command
-
-    cli.clearPrograms();
-    cli.addPrograms([schemaDef, schema1, schema2, schema3]);
-    processArgv = headArgs.concat([]);
-    expect(cli.parse(processArgv)).toBe('Test Default');
-
-    cli.clearPrograms();
-    cli.addPrograms([schemaDef, schema1, schema2, schema3]);
-    processArgv = headArgs.concat(['unMatchedCommand']);
-    expect(cli.parse(processArgv)).toBe('Test Default');
-
-    cli.clearPrograms();
-    cli.addPrograms([schema1, schema2, schema3]);
-    processArgv = headArgs.concat(['test1']);
-    expect(cli.parse(processArgv)).toBe('Test 1');
-
-    cli.clearPrograms();
-    cli.addPrograms([schema1, schema2, schema3]);
-    processArgv = headArgs.concat(['test2']);
-    expect(cli.parse(processArgv)).toBe('Test 2');
-
-    cli.clearPrograms();
-    cli.addPrograms([schema1, schema2, schema3]);
-    processArgv = headArgs.concat(['test3']);
-    expect(cli.parse(processArgv)).toBe('Test 3');
-  });
-
-  test('Command_Arguments', function () {
-    var schema = {
-      command: 'play <consoleName> [gameTitle]',
-      action: function (consoleName, gameTitle) {
-        if (gameTitle) {
-          return 'I play "' + gameTitle + '" with ' + consoleName + '.';
-        }
-        return 'I play with ' + consoleName + '.';
-      }
-    };
-
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat([]);
-    expect(_cb(cli.parse, processArgv)).toThrowError();
-
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['play']);
-    expect(_cb(cli.parse, processArgv)).toThrowError();
-
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['play', 'PC-Engine']);
-    expect(cli.parse(processArgv)).toBe('I play with PC-Engine.');
-
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['play', 'PC-Engine', 'Fighting Street']);
-    expect(cli.parse(processArgv)).toBe('I play "Fighting Street" with PC-Engine.');
-  });
-
-  test('Command_AnyArguments', function () {
-    var schema = {
-      command: 'createZip <srcDir> <destDir> [excludes...]',
-      action: function (srcDir, destDir, excludes) {
-        if (excludes) {
-          return 'srcDir: "' + srcDir + '", destDir: "' + destDir + '", '
-            + 'excludes: ' + excludes.join(', ');
-        }
-        return 'srcDir: "' + srcDir + '", destDir: "' + destDir + '"';
-      }
-    };
-
-    var srcDir = 'C:\\Users';
-    var destDir = 'D:\\BackUp';
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['createZip', srcDir, destDir]);
-    expect(cli.parse(processArgv)).toBe('srcDir: "' + srcDir + '", destDir: "' + destDir + '"');
-
-    var exclude1 = '.tmp';
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['createZip', srcDir, destDir, exclude1]);
-    expect(cli.parse(processArgv)).toBe('srcDir: "' + srcDir + '", destDir: "' + destDir + '", excludes: ' + exclude1);
-
-    var exclude2 = 'cache';
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['createZip', srcDir, destDir, exclude1, exclude2]);
-    expect(cli.parse(processArgv)).toBe('srcDir: "' + srcDir + '", destDir: "' + destDir + '", excludes: ' + exclude1 + ', ' + exclude2);
-
-    var exclude3 = '~';
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['createZip', srcDir, destDir, exclude1, exclude2, exclude3]);
-    expect(cli.parse(processArgv)).toBe('srcDir: "' + srcDir + '", destDir: "' + destDir + '", excludes: ' + exclude1 + ', ' + exclude2 + ', ' + exclude3);
-  });
-
-  test('Command Arguments and Options', function () {
-    var schema = {
-      command: 'unZip <zipPath> [destDir]',
-      options: [
-        ['-N, --no-makes-dir', 'None create a new directory'],
-        ['-P, --pwd <password>', 'unzip password']
-      ],
-      action: function (zipPath, destDir, options) {
-        if (options.pwd) {
-          return 'Unzip "' + zipPath + '". The encrypting password is "' + options.pwd + '"';
-        }
-        if (!options.makesDir) {
-          return 'Unzip "' + zipPath + '" without making new directory.';
-        }
-        if (destDir) {
-          return 'Unzip "' + zipPath + '" to "' + destDir + '".';
-        }
-        return 'Unzip "' + zipPath + '".';
-      }
-    };
-
-    var zipPath = 'D:\\mydata.zip';
-    var destDir = 'D:\\tmp';
-
-    cli.clearPrograms();
-    cli.addPrograms([schema]);
-    processArgv = headArgs.concat([]);
-    expect(_cb(cli.parse, processArgv)).toThrowError();
-
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['unZip', zipPath]);
-    expect(cli.parse(processArgv)).toBe('Unzip "' + zipPath + '".');
-
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['unZip', zipPath, destDir]);
-    expect(cli.parse(processArgv)).toBe('Unzip "' + zipPath + '" to "' + destDir + '".');
-
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['unZip', zipPath, '-N']);
-    expect(cli.parse(processArgv)).toBe('Unzip "' + zipPath + '" without making new directory.');
-
-    cli.clearPrograms();
-    cli.addProgram(schema);
-    processArgv = headArgs.concat(['unZip', zipPath, '-P', 'p@ssWD']);
-    expect(cli.parse(processArgv)).toBe('Unzip "' + zipPath + '". The encrypting password is "p@ssWD"');
   });
 
   // Version
