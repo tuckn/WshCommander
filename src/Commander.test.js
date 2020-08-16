@@ -214,11 +214,11 @@ describe('Commander', function () {
 
   // Option
 
-  test('Option switch', function () {
+  test('Option_switch', function () {
     var schema = {
       options: [
-        ['-O, --switch-no', 'Normaly opened switch'], // default: false
-        ['-C, --no-switch-nc', 'Normaly closed switch'] // default: true
+        ['-C, --close1', 'Normaly opened switch'], // default: false
+        ['-O, --no-close2', 'Normaly closed switch'] // default: true
       ]
     };
 
@@ -226,36 +226,36 @@ describe('Commander', function () {
     cli.addProgram(schema);
     processArgv = headArgs.concat([]);
     cli.parse(processArgv);
-    expect(cli.opt.switchNo).toBe(false);
-    expect(cli.opt.switchNc).toBe(true);
+    expect(cli.opt.close1).toBe(false);
+    expect(cli.opt.close2).toBe(true);
 
     cli.clearPrograms();
     cli.addProgram(schema);
     processArgv = headArgs.concat(['-O', '-C']);
     cli.parse(processArgv);
-    expect(cli.opt.switchNo).toBe(true);
-    expect(cli.opt.switchNc).toBe(false);
+    expect(cli.opt.close1).toBe(true);
+    expect(cli.opt.close2).toBe(false);
 
     cli.clearPrograms();
     cli.addProgram(schema);
-    processArgv = headArgs.concat(['--switch-no', '--no-switch-nc']);
+    processArgv = headArgs.concat(['--close1', '--no-close2']);
     cli.parse(processArgv);
-    expect(cli.opt.switchNo).toBe(true);
-    expect(cli.opt.switchNc).toBe(false);
+    expect(cli.opt.close1).toBe(true);
+    expect(cli.opt.close2).toBe(false);
 
     cli.clearPrograms();
     cli.addProgram(schema);
-    processArgv = headArgs.concat(['--switch-no']);
+    processArgv = headArgs.concat(['--close1']);
     cli.parse(processArgv);
-    expect(cli.opt.switchNo).toBe(true);
-    expect(cli.opt.switchNc).toBe(true);
+    expect(cli.opt.close1).toBe(true);
+    expect(cli.opt.close2).toBe(true);
 
     cli.clearPrograms();
     cli.addProgram(schema);
-    processArgv = headArgs.concat(['--no-switch-nc']);
+    processArgv = headArgs.concat(['--no-close2']);
     cli.parse(processArgv);
-    expect(cli.opt.switchNo).toBe(false);
-    expect(cli.opt.switchNc).toBe(false);
+    expect(cli.opt.close1).toBe(false);
+    expect(cli.opt.close2).toBe(false);
 
     var errVals = [true, false, undefined, null, 0, 1, NaN, Infinity, '', [], {}];
     errVals.forEach(function (val) {
@@ -529,15 +529,15 @@ describe('Commander', function () {
 
   // Help
 
-  testName = 'Help1 with Version';
+  testName = 'Help1_withVersion';
   test(testName, function () {
     var ARG_HELP1_PROCESS = '/ARG_HELP1_PROCESS';
 
     var schema = {
       version: '1.0.1',
       options: [
-        ['-O, --switch-no', 'Normaly opened switch'],
-        ['-C, --no-switch-nc', 'Normaly closed switch']
+        ['-C, --close1', 'Normaly opened switch'],
+        ['-O, --no-close2', 'Normaly closed switch']
       ]
     };
 
@@ -551,19 +551,20 @@ describe('Commander', function () {
     var cmd = testCmd + ' -t "' + testName + '" ' + ARG_HELP1_PROCESS;
     var retObj = execSync(cmd);
     var stdOut = retObj.stdout;
+    // console.log(stdOut);
 
     expect(stdOut.indexOf(''
       + 'Usage: Package.wsf [options]\r\n'
       + '\r\n'
       + 'Options:\r\n'
-      + '  -V, --version      Output the version number\r\n'
-      + '  -O, --switch-no    Normaly opened switch (default: false)\r\n'
-      + '  -C, --no-switch-nc Normaly closed switch (default: true)\r\n'
-      + '  -h, --help         Output usage information'
+      + '  -V, --version   Output the version number\r\n'
+      + '  -C, --close1    Normaly opened switch (default: false)\r\n'
+      + '  -O, --no-close2 Normaly closed switch\r\n'
+      + '  -h, --help      Output usage information'
     )).not.toBe(-1);
   });
 
-  testName = 'Help2 with Description';
+  testName = 'Help2_withDescription';
   test(testName, function () {
     var ARG_HELP2_PROCESS = '/ARG_HELP2_PROCESS';
 
@@ -600,7 +601,7 @@ describe('Commander', function () {
     )).not.toBe(-1);
   });
 
-  testName = 'Help3 with Command';
+  testName = 'Help3_withCommand';
   test(testName, function () {
     var ARG_HELP3_PROCESS = '/ARG_HELP3_PROCESS';
 
@@ -627,13 +628,13 @@ describe('Commander', function () {
       + 'Usage: unZip <zipPath> <destDir> [excludes...] [options]\r\n'
       + '\r\n'
       + 'Options:\r\n'
-      + '  -N, --no-makes-dir   None create a new directory (default: true)\r\n'
+      + '  -N, --no-makes-dir   None create a new directory\r\n'
       + '  -P, --pwd <password> unzip password\r\n'
       + '  -h, --help           Output usage information'
     )).not.toBe(-1);
   });
 
-  testName = 'Help4 Custom Command';
+  testName = 'Help4_CustomCommand';
   test(testName, function () {
     var ARG_HELP4_PROCESS = '/ARG_HELP4_PROCESS';
 

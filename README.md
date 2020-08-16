@@ -287,7 +287,7 @@ NaN
 var cmd = Wsh.Commander; // Shorthand
 
 cmd.addProgram({
-  version: '0.5.1', // Add the version number and outputing action
+  version: '0.5.1', // Add the version number and outputting action
   options: [
     ['-h, --height <Number>', 'Picture size']
   ],

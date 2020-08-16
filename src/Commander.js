@@ -551,7 +551,11 @@
         for (var i = baseLen; i < maxWidth; i++) acc += ' ';
 
         if (hasContent(opt.description)) acc += ' ' + opt.description;
-        if (hasContent(opt.val)) acc += ' (default: ' + insp(opt.val) + ')';
+
+        // In case of `--no-` flag, The default value (true) is not displayed.
+        if (hasContent(opt.val) && opt.valType !== TYPE_SWITCH_NC) {
+          acc += ' (default: ' + insp(opt.val) + ')';
+        }
         acc += '\n';
 
         return acc;
@@ -691,19 +695,21 @@
    *     schema: ['-S, --show-help', 'Show help']
    *   },
    *   options: [
-   *     name: 'gameTitle',
-   *     shortFlag: '-G',
-   *     longFlag: '--game-title',
-   *     valType: 'VALUE',
-   *     description: 'A game name',
-   *     isRequired: false,
-   *     isPairWithVal: false,
-   *     isSpecified: false,
-   *     isArray: false,
-   *     val: undefined,
-   *     initFunc: undefined,
-   *     schema: ['-G, --game-title [title]', 'A game name']
-   *     valSchema: '[title]'
+   *     { name: 'gameTitle',
+   *       shortFlag: '-G',
+   *       longFlag: '--game-title',
+   *       valType: 'VALUE',
+   *       description: 'A game name',
+   *       isRequired: false,
+   *       isPairWithVal: false,
+   *       isSpecified: false,
+   *       isArray: false,
+   *       val: undefined,
+   *       initFunc: undefined,
+   *       schema: ['-G, --game-title [title]', 'A game name']
+   *       valSchema: '[title]' },
+   *     { ... },
+   *     ...
    *   ],
    *   action: function (console, ..., options) { ... } }
    * @property {string} name - The program name.
@@ -847,20 +853,20 @@
    * // Ex. Option Switch
    * cmd.addProgram({
    *   options: [
-   *     ['-O, --switch-no', 'Normally opened switch'], // default: false
-   *     ['-C, --no-switch-nc', 'Normally closed switch'] // default: true
+   *     ['-C, --close1', 'Normally opened switch'], // default: false
+   *     ['-O, --no-close2', 'Normally closed switch'] // default: true
    *   ]
    * });
    * cmd.parse(process.argv);
    *
    * // `D:\>cscript Run.wsf`
-   * cmd.opt.switchNo; // false
-   * cmd.opt.switchNc; // true
+   * cmd.opt.close1; // false
+   * cmd.opt.close2; // true
    *
    * // `D:\>cscript Run.wsf -O -C`
-   * //  or `D:\>cscript Run.wsf --switch-no --no-swith-nc`
-   * cmd.opt.switchNo; // true
-   * cmd.opt.switchNc; // false
+   * //  or `D:\>cscript Run.wsf --close1 --no-close2`
+   * cmd.opt.close1; // true
+   * cmd.opt.close2; // false
    * @example
    * // Ex. Option Flag value
    * cmd.addProgram({
