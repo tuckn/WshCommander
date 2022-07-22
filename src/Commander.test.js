@@ -13,11 +13,11 @@ var child_process = Wsh.ChildProcess;
 var cli = Wsh.Commander;
 
 var includes = util.includes;
-var srr = os.surroundPath;
+var srrd = os.surroundCmdArg;
 var CSCRIPT = os.exefiles.cscript;
 var execSync = child_process.execSync;
 
-var testCmd = srr(CSCRIPT) + ' ' + srr(__filename) + ' //job:test:Commander';
+var testCmd = srrd(CSCRIPT) + ' ' + srrd(__filename) + ' //job:test:Commander';
 
 var _cb = function (fn/* , args */) {
   var args = Array.from(arguments).slice(1);
@@ -521,7 +521,7 @@ describe('Commander', function () {
 
     var mainCmd = os.exefiles.cscript;
     var args = ['//nologo', __filename, '-t', TASKNAME, GET_VER_MSG];
-    var oExec = os.execSync(mainCmd, args);
+    var oExec = os.shExecSync(mainCmd, args);
     var stdOut = oExec.stdout;
 
     expect(stdOut.indexOf('0.5.1')).not.toBe(-1);
