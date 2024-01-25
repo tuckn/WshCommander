@@ -9,7 +9,7 @@ The Command-Prompt Interfaces for WSH (Windows Script Host).
 &emsp;&emsp;├─ [WshConfigStore](https://github.com/tuckn/WshConfigStore) (./dist/module.js)  
 &emsp;&emsp;├─ [WshDotEnv](https://github.com/tuckn/WshDotEnv) (./dist/module.js)  
 &emsp;&emsp;├─ [WshLogger](https://github.com/tuckn/WshLogger) (./dist/module.js)  
-&emsp;&emsp;└─ [WshModeJs](https://github.com/tuckn/WshModeJs) (./dist/bundle.js)  
+&emsp;&emsp;└─ [WshModeJs](https://github.com/tuckn/WshModeJs) (./dist/bundle.js)
 
 WshBasicApps can use all the above modules.
 
@@ -352,17 +352,17 @@ You can also use the following helper functions in your JScript (_.\\MyScript.js
 
 ## Documentation
 
-See all specifications [here](https://docs.tuckn.net/WshCommander) and also below.
+See all specifications [here](https://tuckn.net/docs/WshCommander/) and also below.
 
-- [WshPolyfill](https://docs.tuckn.net/WshPolyfill)
-- [WshUtil](https://docs.tuckn.net/WshUtil)
-- [WshPath](https://docs.tuckn.net/WshPath)
-- [WshOS](https://docs.tuckn.net/WshOS)
-- [WshFileSystem](https://docs.tuckn.net/WshFileSystem)
-- [WshProcess](https://docs.tuckn.net/WshProcess)
-- [WshChildProcess](https://docs.tuckn.net/WshChildProcess)
-- [WshNet](https://docs.tuckn.net/WshNet)
-- [WshModeJs](https://docs.tuckn.net/WshModeJs)
+- [WshPolyfill](https://tuckn.net/docs/WshPolyfill/)
+- [WshUtil](https://tuckn.net/docs/WshUtil/)
+- [WshPath](https://tuckn.net/docs/WshPath/)
+- [WshOS](https://tuckn.net/docs/WshOS/)
+- [WshFileSystem](https://tuckn.net/docs/WshFileSystem/)
+- [WshProcess](https://tuckn.net/docs/WshProcess/)
+- [WshChildProcess](https://tuckn.net/docs/WshChildProcess/)
+- [WshNet](https://tuckn.net/docs/WshNet/)
+- [WshModeJs](https://tuckn.net/docs/WshModeJs/)
 
 ## License
 

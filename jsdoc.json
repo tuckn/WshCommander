@@ -37,9 +37,9 @@
     "openGraph": {
       "title": "WSH: WshCommander",
       "type": "website",
-      "image": "https://docs.tuckn.net/WshCommander/img/openGraph-image.png",
+      "image": "https://tuckn.net/docs/WshCommander/img/openGraph-image.png",
       "site_name": "@tuckn/WshCommander",
-      "url": "https://docs.tuckn.net/WshCommander"
+      "url": "https://tuckn.net/docs/WshCommander/"
     },
     "meta": {
       "title": "WshCommander",
